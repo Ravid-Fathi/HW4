@@ -1,2 +1,4 @@
 def main() -> None:
-    print("Hello from hw4!")
+    from main import main as run_app
+
+    run_app()
