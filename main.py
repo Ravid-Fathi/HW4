@@ -105,6 +105,7 @@ class StudentGradeEditor(QMainWindow):
 
             self.update_table()
 
+
     def apply_bonus(self):
         text = self.bonus_input.text().strip()
         if not text:
@@ -132,10 +133,21 @@ class StudentGradeEditor(QMainWindow):
                 self.table.setItem(row, column, QTableWidgetItem(str(value)))
 
     def update_file(self):
-        # TODO: Implement CSV writing logic here.
-        # Write student IDs and corrected grades to self.selected_file.
+        if not self.selected_file:
+            return
+
+        with open(self.selected_file, mode='r', encoding='utf-8-sig', newline='') as f:
+            reader = csv.reader(f)
+            original_header = next(reader)
+
+        with open(self.selected_file, mode='w', encoding='utf-8', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(original_header)
+            for i in range(len(self.student_ids)):
+                writer.writerow([self.student_ids[i], self.corrected_grades[i]])
 
         self.open_file_cross_platform(self.selected_file)
+
 
     def open_file_cross_platform(self, file_path):
         if not file_path:
