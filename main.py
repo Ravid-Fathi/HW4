@@ -3,11 +3,9 @@ import subprocess
 import sys
 import csv
 
-from PySide6.QtCore import Qt
 from PySide6.QtGui import QIntValidator
 from PySide6.QtWidgets import (
     QApplication,
-    QDialog,
     QFileDialog,
     QHBoxLayout,
     QLabel,
@@ -19,6 +17,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+from About import AboutWindow
 
 
 class StudentGradeEditor(QMainWindow):
@@ -161,25 +160,11 @@ class StudentGradeEditor(QMainWindow):
             subprocess.Popen(["xdg-open", file_path])
 
     def show_about(self):
-        dialog = QDialog(self)
-        dialog.setWindowTitle("About")
-        dialog.resize(360, 180)
-
-        layout = QVBoxLayout(dialog)
-        layout.setContentsMargins(24, 24, 24, 24)
-        layout.setSpacing(10)
-
-        layout.addWidget(QLabel("Student Grade Editor"))
-        layout.addWidget(QLabel("Author: Ravid Fathi"))
-        layout.addWidget(QLabel("Email: Ravid.Fathi@s.afeka.ac.il"))
-        layout.addWidget(QLabel("GitHub Repository: [PLACEHOLDER_URL]"))
-        layout.addStretch()
-
-        close_button = QPushButton("Close")
-        close_button.clicked.connect(dialog.accept)
-        layout.addWidget(close_button, alignment=Qt.AlignRight)
-
-        dialog.exec()
+        if not hasattr(self, "about_window"):
+            self.about_window = AboutWindow()
+        self.about_window.show()
+        self.about_window.raise_()
+        self.about_window.activateWindow()
 
 
 MainWindow = StudentGradeEditor
