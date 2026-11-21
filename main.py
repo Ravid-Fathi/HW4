@@ -3,7 +3,7 @@ import subprocess
 import sys
 import csv
 
-from PySide6.QtGui import QIntValidator
+from PySide6.QtGui import QDoubleValidator, QIntValidator
 from PySide6.QtWidgets import (
     QApplication,
     QFileDialog,
@@ -16,6 +16,7 @@ from PySide6.QtWidgets import (
     QTableWidgetItem,
     QVBoxLayout,
     QWidget,
+    QCheckBox
 )
 from About import AboutWindow
 
@@ -51,6 +52,12 @@ class StudentGradeEditor(QMainWindow):
         self.bonus_input.setValidator(QIntValidator(-1000, 1000, self))
         self.bonus_input.returnPressed.connect(self.apply_bonus)
 
+        self.percentage_checkbox = QCheckBox("Percentage bonus")
+        self.percentage_checkbox.toggled.connect(self.update_bonus_mode)
+
+        apply_bonus_button = QPushButton("Apply Bonus")
+        apply_bonus_button.clicked.connect(self.apply_bonus)
+
         update_button = QPushButton("Update File")
         update_button.clicked.connect(self.update_file)
 
@@ -59,6 +66,8 @@ class StudentGradeEditor(QMainWindow):
 
         controls_layout.addWidget(load_button)
         controls_layout.addWidget(self.bonus_input)
+        controls_layout.addWidget(self.percentage_checkbox)
+        controls_layout.addWidget(apply_bonus_button)
         controls_layout.addStretch()
         controls_layout.addWidget(update_button)
         controls_layout.addWidget(about_button)
@@ -110,16 +119,38 @@ class StudentGradeEditor(QMainWindow):
         if not text:
             return
 
+        if self.percentage_checkbox.isChecked():
+            self.apply_percentage_bonus()
+            return
+
         bonus = int(text)
 
         for i in range(len(self.original_grades)):
             new_grade = self.original_grades[i] + bonus
-            if new_grade > 100:
-                new_grade = 100
-            self.corrected_grades[i] = new_grade
+            self.corrected_grades[i] = max(0, min(100, new_grade))
 
         self.update_table()
 
+    def update_bonus_mode(self, checked):
+        if checked:
+            self.bonus_input.setPlaceholderText("Bonus percentage")
+            self.bonus_input.setValidator(QDoubleValidator(-100.0, 100.0, 2, self))
+        else:
+            self.bonus_input.setPlaceholderText("Bonus points")
+            self.bonus_input.setValidator(QIntValidator(-1000, 1000, self))
+
+    def apply_percentage_bonus(self):
+        text = self.bonus_input.text().strip()
+        if not text:
+            return
+
+        percentage = float(text)
+        for i, original_grade in enumerate(self.original_grades):
+            new_grade = original_grade * (1 + percentage / 100)
+            rounded_grade = round(new_grade)
+            self.corrected_grades[i] = max(0, min(100, rounded_grade))
+
+        self.update_table()
 
     def update_table(self):
         for row in range(50):
