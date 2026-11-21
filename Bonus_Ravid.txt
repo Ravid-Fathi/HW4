@@ -1,0 +1,1 @@
+For Exercise 1, I updated the user interface by adding a percentage checkbox option alongside the standard bonus input, which adds flat points when pressing Enter. When the percentage box is ticked, the entered value is applied as a percentage increase to the original grades, updating the corrected grades so they can be saved via the update button.
