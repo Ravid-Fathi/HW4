@@ -1,6 +1,7 @@
 import os
 import subprocess
 import sys
+import csv
 
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QIntValidator
@@ -87,8 +88,22 @@ class StudentGradeEditor(QMainWindow):
 
     def load_file(self, file_path):
         self.selected_file = file_path
-        # TODO: Implement CSV reading logic here.
-        # Load student IDs and original grades from the selected CSV file.
+        if file_path:
+            self.selected_file = file_path
+            self.student_ids.clear()
+            self.original_grades.clear()
+            self.corrected_grades.clear()
+
+        with open(self.selected_file, mode='r', encoding='utf-8-sig', newline='') as f: 
+            reader = csv.reader(f)
+            next(reader)
+            for row in reader:
+                self.student_ids.append(row[0])
+                grade = int(row[1])
+                self.original_grades.append(grade)
+                self.corrected_grades.append(grade)
+
+            self.update_table()
 
     def apply_bonus(self):
         # TODO: Implement bonus calculation logic here.
