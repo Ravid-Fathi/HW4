@@ -106,9 +106,20 @@ class StudentGradeEditor(QMainWindow):
             self.update_table()
 
     def apply_bonus(self):
-        # TODO: Implement bonus calculation logic here.
-        # Read the integer bonus from self.bonus_input and update corrected_grades.
-        pass
+        text = self.bonus_input.text().strip()
+        if not text:
+            return
+
+        bonus = int(text)
+
+        for i in range(len(self.original_grades)):
+            new_grade = self.original_grades[i] + bonus
+            if new_grade > 100:
+                new_grade = 100
+            self.corrected_grades[i] = new_grade
+
+        self.update_table()
+
 
     def update_table(self):
         for row in range(50):
